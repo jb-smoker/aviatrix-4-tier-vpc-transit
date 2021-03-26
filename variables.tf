@@ -1,25 +1,31 @@
 locals {
   aws_use1_vpcs = {
-    east_client_1 = {
+    client_spoke = {
       cidr = "10.1.0.0/16"
     }
-    edge = {
+    avx_transit = {
       cidr = "10.2.0.0/16"
     }
   }
   aws_usw2_vpcs = {
-    west_compute_1 = {
+    compute_spoke = {
       cidr           = "10.3.0.0/16"
       secondary_cidr = "100.64.0.0/16"
     }
   }
   common_tags = {
-    Env         = "stage"
-    Environment = "staging"
-    Repository  = "github/repo"
-    Team        = "solutions architecture"
-    Terraform   = true
+    Env        = "stage"
+    Repository = "aviatrix-4-tier-vpc-transit"
+    Team       = "solutions architecture"
+    Terraform  = true
   }
+  common_tags_list = [
+    "Env:stage",
+    "Repository:aviatrix-4-tier-vpc-transit",
+    "Team:solutions architecture",
+    "Terraform:1",
+  ]
+
   snat_policy = [
     "10.0.0.0/8",
     "172.16.0.0/12",

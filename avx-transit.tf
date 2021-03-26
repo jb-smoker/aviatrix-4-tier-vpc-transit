@@ -16,20 +16,16 @@ data "aws_subnet" "client_azb" {
 
 # Create an Aviatrix AWS Transit Network
 resource "aviatrix_transit_gateway" "east_edge_avx_tgw" {
-  cloud_type   = 1
-  account_name = var.account_name
-  gw_name      = "avx-transit-east-edge"
-  vpc_id       = data.aws_vpc.edge.id
-  vpc_reg      = local.aws_use1_vpcs.edge.region
-  gw_size      = "t2.micro"
-  subnet       = data.aws_subnet.edge.cidr_block
-  ha_subnet    = data.aws_subnet.edge_azb.cidr_block
-  ha_gw_size   = "t2.micro"
-  tag_list = [
-    "name:value",
-    "name1:value1",
-    "name2:value2",
-  ]
+  cloud_type               = 1
+  account_name             = var.account_name
+  gw_name                  = "avx-transit-east-edge"
+  vpc_id                   = data.aws_vpc.edge.id
+  vpc_reg                  = "us-east-1"
+  gw_size                  = "t2.micro"
+  subnet                   = data.aws_subnet.edge.cidr_block
+  ha_subnet                = data.aws_subnet.edge_azb.cidr_block
+  ha_gw_size               = "t2.micro"
+  tag_list                 = concat(local.common_tags_list, list("Scope:avx-transit"))
   enable_active_mesh       = true
   enable_hybrid_connection = true
   connected_transit        = true
@@ -39,8 +35,8 @@ resource "aviatrix_spoke_gateway" "east_spoke" {
   cloud_type                        = 1
   account_name                      = var.account_name
   gw_name                           = "avx-spoke-east-client"
-  vpc_id                            = module.aws_use1_vpcs["east_client_1"].vpc_id
-  vpc_reg                           = local.aws_use1_vpcs.edge.region
+  vpc_id                            = module.aws_use1_vpcs["client_spoke"].vpc_id
+  vpc_reg                           = "us-east-1"
   gw_size                           = "t2.micro"
   subnet                            = data.aws_subnet.client_aza.cidr_block
   ha_subnet                         = data.aws_subnet.client_azb.cidr_block
@@ -48,10 +44,7 @@ resource "aviatrix_spoke_gateway" "east_spoke" {
   single_ip_snat                    = true #should be false after you figure out how to terraform snat
   enable_active_mesh                = true
   manage_transit_gateway_attachment = false
-  tag_list = [
-    "k1:v1",
-    "k2:v2",
-  ]
+  tag_list                          = concat(local.common_tags_list, list("Scope:avx-spoke"))
 }
 
 resource "aviatrix_spoke_transit_attachment" "east_attachment" {
@@ -63,8 +56,8 @@ resource "aviatrix_spoke_gateway" "west_spoke" {
   cloud_type                        = 1
   account_name                      = var.account_name
   gw_name                           = "avx-spoke-west-compute"
-  vpc_id                            = module.aws_usw2_vpcs["west_compute_1"].vpc_id
-  vpc_reg                           = local.aws_usw2_vpcs.west_compute_1.region
+  vpc_id                            = module.aws_usw2_vpcs["compute_spoke"].vpc_id
+  vpc_reg                           = "us-west-2"
   gw_size                           = "t2.micro"
   subnet                            = "10.3.5.0/26"
   ha_subnet                         = "10.3.5.64/26"
@@ -72,10 +65,7 @@ resource "aviatrix_spoke_gateway" "west_spoke" {
   single_ip_snat                    = false
   enable_active_mesh                = true
   manage_transit_gateway_attachment = false
-  tag_list = [
-    "k1:v1",
-    "k2:v2",
-  ]
+  tag_list                          = concat(local.common_tags_list, list("Scope:avx-spoke"))
 }
 
 resource "aviatrix_gateway_snat" "west_spoke_snat" {

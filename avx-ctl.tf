@@ -62,7 +62,7 @@ resource "aviatrix_gateway" "avx_vpn_gw_1" {
   account_name     = var.account_name
   gw_name          = "avx-vpn-gw-1"
   vpc_id           = data.aws_vpc.edge.id
-  vpc_reg          = local.aws_use1_vpcs.edge.region
+  vpc_reg          = "us-east-1"
   gw_size          = "t3.micro"
   enable_elb       = false
   enable_ldap      = false
@@ -74,7 +74,7 @@ resource "aviatrix_gateway" "avx_vpn_gw_1" {
   vpn_access       = true
   vpn_protocol     = "UDP"
   single_az_ha     = false
-  subnet           = cidrsubnet(local.aws_use1_vpcs.edge.cidr, 4, 5)
+  subnet           = cidrsubnet(local.aws_use1_vpcs.avx_transit.cidr, 4, 5)
   max_vpn_conn     = "150"
   vpn_cidr         = "10.58.120.0/22"
   tag_list         = ["Terraform:1"]
