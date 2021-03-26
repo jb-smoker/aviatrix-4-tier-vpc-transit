@@ -10,7 +10,7 @@ provider "aws" {
 
 provider "aviatrix" {
   username      = "admin"
-  controller_ip = "54.80.35.228"
+  controller_ip = "tbd"
 }
 
 terraform {
